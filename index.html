@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barbearia — Corpo de Cadetes AFA</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d0f14;--surface:#151821;--card:#1c2030;--border:#2a2f42;
+  --accent:#c9a84c;--accent2:#e8c96a;--red:#e05252;--green:#52c07a;
+  --blue:#5294e0;--yellow:#e0c452;--muted:#5a6080;--text:#dde1f0;--text2:#8890b0;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--display:'Bebas Neue',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* layout */
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.main{padding:32px;overflow-y:auto}
+
+/* sidebar */
+.logo{padding:0 20px 28px;border-bottom:1px solid var(--border)}
+.logo-title{font-family:var(--display);font-size:24px;letter-spacing:2px;color:var(--accent);line-height:1}
+.logo-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:4px;text-transform:uppercase}
+.nav{padding:16px 0;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;font-size:12px;font-family:var(--mono);letter-spacing:.5px;color:var(--text2);border-left:2px solid transparent;transition:all .15s;text-transform:uppercase}
+.nav-item:hover{color:var(--text);background:rgba(201,168,76,.06)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(201,168,76,.08)}
+.nav-item .icon{font-size:14px;width:18px;text-align:center}
+.nav-section{padding:16px 20px 6px;font-size:9px;font-family:var(--mono);color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.nav-divider{border-top:1px solid var(--border);margin:8px 0}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border)}
+.clock{font-family:var(--mono);font-size:22px;color:var(--accent);letter-spacing:2px}
+.clock-date{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* page header */
+.page-header{margin-bottom:28px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.page-title{font-family:var(--display);font-size:42px;letter-spacing:3px;color:var(--text);line-height:1}
+.page-title span{color:var(--accent)}
+.page-sub{font-size:11px;font-family:var(--mono);color:var(--muted);margin-top:6px}
+
+/* cards */
+.cards{display:grid;gap:12px}
+.cards-2{grid-template-columns:repeat(2,1fr)}
+.cards-3{grid-template-columns:repeat(3,1fr)}
+.cards-4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px}
+.card-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.card-value{font-family:var(--display);font-size:36px;letter-spacing:1px;line-height:1}
+.card-sub{font-size:11px;color:var(--text2);margin-top:6px}
+.card-accent{border-left:3px solid var(--accent)}.card-green{border-left:3px solid var(--green)}
+.card-red{border-left:3px solid var(--red)}.card-blue{border-left:3px solid var(--blue)}
+
+/* section */
+.section{margin-bottom:28px}
+.section-title{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* table */
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-family:var(--mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);background:var(--surface);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid rgba(42,47,66,.6);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(201,168,76,.03)}
+
+/* badge */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-red{background:rgba(224,82,82,.15);color:var(--red)}
+.badge-yellow{background:rgba(224,196,82,.15);color:var(--yellow)}
+.badge-green{background:rgba(82,192,122,.15);color:var(--green)}
+.badge-blue{background:rgba(82,148,224,.15);color:var(--blue)}
+.badge-muted{background:rgba(90,96,128,.15);color:var(--muted)}
+.badge-gold{background:rgba(201,168,76,.15);color:var(--accent)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block}
+
+/* sqdn */
+.sqdn{padding:2px 8px;border-radius:4px;font-family:var(--mono);font-size:10px;font-weight:600}
+.sqdn-1{background:rgba(82,192,122,.2);color:#52c07a}
+.sqdn-2{background:rgba(82,148,224,.2);color:#5294e0}
+.sqdn-3{background:rgba(224,82,82,.2);color:#e05252}
+.sqdn-4{background:rgba(90,96,128,.2);color:#8890b0}
+
+/* priority */
+.prio{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;font-weight:600}
+.prio-high{color:var(--red)}.prio-medium{color:var(--yellow)}.prio-normal{color:var(--green)}
+
+/* barber card */
+.barber-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px}
+.barber-name{font-family:var(--display);font-size:20px;letter-spacing:1px;margin-bottom:6px}
+.slot-cadet{font-size:14px;font-weight:600;margin-top:6px}
+.slot-info{font-size:11px;color:var(--text2);margin-top:2px}
+.idle-label{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:6px}
+.idle-pulse{width:8px;height:8px;border-radius:50%;background:var(--yellow);animation:pulse 1.5s ease-in-out infinite}
+.busy-pulse{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.3)}}
+
+/* forms */
+.form-grid{display:grid;gap:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.field input,.field select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:6px;font-family:var(--sans);font-size:13px;transition:border-color .15s;outline:none;width:100%}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.field select option{background:var(--surface)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:6px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600;transition:all .15s}
+.btn-primary{background:var(--accent);color:#0d0f14}.btn-primary:hover{background:var(--accent2)}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:rgba(224,82,82,.15);color:var(--red);border:1px solid rgba(224,82,82,.3)}.btn-danger:hover{background:rgba(224,82,82,.25)}
+.btn-green{background:rgba(82,192,122,.15);color:var(--green);border:1px solid rgba(82,192,122,.3)}.btn-green:hover{background:rgba(82,192,122,.25)}
+.btn-sm{padding:5px 12px;font-size:9px}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;width:480px;max-width:95vw}
+.modal-title{font-family:var(--display);font-size:26px;letter-spacing:2px;margin-bottom:20px}
+
+/* toast */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 18px;font-size:12px;font-family:var(--mono);display:flex;align-items:center;gap:10px;animation:slideIn .2s ease;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.success{border-left:3px solid var(--green)}.toast.info{border-left:3px solid var(--blue)}.toast.warn{border-left:3px solid var(--yellow)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* usuario area banner */
+.user-banner{background:linear-gradient(135deg,rgba(201,168,76,.12),rgba(82,148,224,.08));border:1px solid rgba(201,168,76,.25);border-radius:10px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px}
+.user-banner-icon{font-size:24px}
+.user-banner-text{font-family:var(--mono);font-size:10px;color:var(--text2);line-height:1.6}
+.user-banner-title{font-size:12px;color:var(--accent);font-weight:600;letter-spacing:1px;display:block}
+
+/* misc */
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+.empty{text-align:center;padding:40px;color:var(--muted);font-family:var(--mono);font-size:12px}
+.progress-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+.text-red{color:var(--red)}.text-green{color:var(--green)}.text-yellow{color:var(--yellow)}
+.mt-4{margin-top:4px}.mt-8{margin-top:8px}.mt-16{margin-top:16px}.mt-24{margin-top:24px}
+.flex{display:flex}.gap-8{gap:8px}.gap-12{gap:12px}.items-center{align-items:center}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="logo" style="display:flex;align-items:center;gap:10px;padding:0 16px 24px">
+    <img src="data:image/png;base64,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" style="width:52px;height:52px;object-fit:contain;flex-shrink:0" alt="emblema">
+    <div>
+      <div class="logo-title" style="font-size:20px">BARBEARIA</div>
+      <div class="logo-sub">Corpo de Cadetes</div>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Área do Usuário</div>
+    <div class="nav-item active" onclick="showPage('usuario')" id="nav-usuario">
+      <span class="icon">👤</span> Área do Cadete
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">Operação</div>
+    <div class="nav-item" onclick="showPage('dashboard')" id="nav-dashboard">
+      <span class="icon">◉</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('slots')" id="nav-slots">
+      <span class="icon">✂</span> Slots ao Vivo
+    </div>
+    <div class="nav-item" onclick="showPage('fila')" id="nav-fila">
+      <span class="icon">≡</span> Fila do Dia
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-section">Gestão</div>
+    <div class="nav-item" onclick="showPage('gestao')" id="nav-gestao">
+      <span class="icon">⚙</span> Gestão de Cortes
+    </div>
+    <div class="nav-item" onclick="showPage('historico')" id="nav-historico">
+      <span class="icon">◷</span> Histórico
+    </div>
+    <div class="nav-item" onclick="showPage('pernoite')" id="nav-pernoite">
+      <span class="icon">⊕</span> Término do Pernoite
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="clock-date" id="clock-date">--/--/----</div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+<!-- ─── ÁREA DO USUÁRIO ─── -->
+<div id="page-usuario">
+  <div class="page-header">
+    <div>
+      <div class="page-title">ÁREA DO <span>CADETE</span></div>
+      <div class="page-sub">Inscrição, fila e status da barbearia</div>
+    </div>
+  </div>
+
+  <div class="user-banner">
+    <div class="user-banner-icon">✂</div>
+    <div class="user-banner-text">
+      <span class="user-banner-title">Como funciona</span>
+      Preencha sua inscrição abaixo · A fila é organizada automaticamente por prioridade · Acompanhe seu slot na seção "Fila do Dia"
+    </div>
+  </div>
+
+  <!-- Inscrição -->
+  <div class="section">
+    <div class="section-title">Nova inscrição</div>
+    <div style="max-width:520px;">
+      <div class="card">
+        <div class="form-grid">
+          <div class="field">
+            <label>Nome completo</label>
+            <input type="text" id="u-nome" placeholder="Ex: C4 PEREIRA">
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Esquadrão</label>
+              <select id="u-sqdn">
+                <option value="">Selecione</option>
+                <option value="1">1º Esquadrão</option>
+                <option value="2">2º Esquadrão</option>
+                <option value="3">3º Esquadrão</option>
+                <option value="4">4º Esquadrão</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Data pretendida</label>
+              <input type="date" id="u-data">
+            </div>
+          </div>
+          <div class="field">
+            <label>Horário pretendido (após pernoite)</label>
+            <select id="u-hora">
+              <option value="">Selecione</option>
+              <option value="18:00">18:00</option><option value="18:15">18:15</option>
+              <option value="18:30">18:30</option><option value="18:45">18:45</option>
+              <option value="19:00">19:00</option><option value="19:15">19:15</option>
+              <option value="19:30">19:30</option><option value="19:45">19:45</option>
+              <option value="20:00">20:00</option><option value="20:15">20:15</option>
+              <option value="20:30">20:30</option><option value="20:45">20:45</option>
+              <option value="21:00">21:00</option><option value="21:15">21:15</option>
+              <option value="21:30">21:30</option><option value="21:45">21:45</option>
+            </select>
+          </div>
+          <div id="u-preview-box" class="hidden card" style="padding:14px;border-color:var(--accent)">
+            <div class="card-title">Sua prioridade</div>
+            <div id="u-preview"></div>
+          </div>
+          <button class="btn btn-primary" onclick="submitInscricao('u')">Confirmar inscrição</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mini dashboard read-only -->
+  <div class="section">
+    <div class="section-title">Status da barbearia agora</div>
+    <div class="cards cards-4" id="u-kpi-cards"></div>
+  </div>
+
+  <!-- Barbeiros (somente visualização) -->
+  <div class="section">
+    <div class="section-title">Barbeiros ao vivo</div>
+    <div class="cards cards-2" id="u-barber-cards"></div>
+  </div>
+
+  <!-- Fila do dia read-only -->
+  <div class="section">
+    <div class="section-title">Fila de hoje</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Cadete</th><th>Esquadrão</th><th>Prioridade</th><th>Slot</th><th>Status</th></tr></thead>
+        <tbody id="u-fila-table"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DASHBOARD ─── -->
+<div id="page-dashboard" class="hidden">
+  <div class="page-header">
+    <div>
+      <div class="page-title">DASH<span>BOARD</span></div>
+      <div class="page-sub">Visão geral da operação noturna</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Status atual</div>
+    <div class="cards cards-4" id="kpi-cards"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Barbeiros agora</div>
+    <div class="cards cards-2" id="barber-status-mini"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Próximos da fila</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Cadete</th><th>Esquadrão</th><th>Último corte</th><th>Semanas</th><th>Prioridade</th><th>Slot</th><th>Status</th></tr></thead>
+        <tbody id="fila-preview"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SLOTS AO VIVO ─── -->
+<div id="page-slots" class="hidden">
+  <div class="page-header">
+    <div>
+      <div class="page-title">SLOTS <span>AO VIVO</span></div>
+      <div class="page-sub">Atualização automática a cada 30 segundos</div>
+    </div>
+    <div class="flex gap-8 items-center">
+      <span class="badge badge-green"><span class="dot"></span> Ao vivo</span>
+      <button class="btn btn-ghost btn-sm" onclick="renderSlots()">↻ Atualizar</button>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Barbeiros</div>
+    <div class="cards cards-2" id="barber-live"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Grade de slots — noite de hoje</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr id="slots-grid-header"><th>Horário</th></tr></thead>
+        <tbody id="slots-grid"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FILA DO DIA ─── -->
+<div id="page-fila" class="hidden">
+  <div class="page-header">
+    <div>
+      <div class="page-title">FILA <span>DO DIA</span></div>
+      <div class="page-sub">Ordenada por prioridade automaticamente</div>
+    </div>
+    <button class="btn btn-primary" onclick="distribuirSlots()">⟳ Redistribuir Slots</button>
+  </div>
+  <div class="section">
+    <div class="section-title">Inscrições de hoje</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Pos.</th><th>Cadete</th><th>Esquadrão</th><th>Inscrição</th><th>Último corte</th><th>Sem. sem cortar</th><th>Prioridade</th><th>Slot alocado</th><th>Status</th><th>Ação</th></tr></thead>
+        <tbody id="fila-full"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Lista de espera</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Pos.</th><th>Cadete</th><th>Esquadrão</th><th>Sem. sem cortar</th><th>Prioridade</th></tr></thead>
+        <tbody id="espera-list"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── GESTÃO DE CORTES ─── -->
+<div id="page-gestao" class="hidden">
+  <div class="page-header">
+    <div>
+      <div class="page-title">GESTÃO DE <span>CORTES</span></div>
+      <div class="page-sub">Disponibilidade, atribuição e finalização</div>
+    </div>
+  </div>
+
+  <!-- Disponibilidade dos barbeiros -->
+  <div class="section">
+    <div class="section-title">Barbeiros — disponibilidade hoje</div>
+    <div class="cards cards-2" id="gestao-disponibilidade"></div>
+  </div>
+
+  <!-- Barbeiros ativos com controles -->
+  <div class="section">
+    <div class="section-title">Barbeiros disponíveis — atribuição e finalização</div>
+    <div class="cards cards-2" id="gestao-barbers"></div>
+  </div>
+
+  <!-- Atribuição manual -->
+  <div class="section">
+    <div class="section-title">Atribuir cadete manualmente (encaixe)</div>
+    <div style="max-width:480px;">
+      <div class="card">
+        <div class="form-grid">
+          <div class="form-row">
+            <div class="field">
+              <label>Cadete</label>
+              <select id="enc-cadete"></select>
+            </div>
+            <div class="field">
+              <label>Barbeiro</label>
+              <select id="enc-barbeiro"></select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="atribuirEncaixe()">Atribuir agora</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── HISTÓRICO ─── -->
+<div id="page-historico" class="hidden">
+  <div class="page-header">
+    <div>
+      <div class="page-title">HIST<span>ÓRICO</span></div>
+      <div class="page-sub">Registro de cortes realizados e cadetes cadastrados</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">Cadetes cadastrados</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Cadete</th><th>Esquadrão</th><th>Último corte</th><th>Semanas sem cortar</th><th>Total de cortes</th><th>Prioridade atual</th></tr></thead>
+        <tbody id="historico-table"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="section" style="margin-top:28px;">
+    <div class="section-title">Últimos cortes registrados</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Data/Hora</th><th>Cadete</th><th>Esquadrão</th><th>Barbeiro</th></tr></thead>
+        <tbody id="cortes-recentes"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TÉRMINO DO PERNOITE ─── -->
+<div id="page-pernoite" class="hidden">
+  <div class="page-header">
+    <div>
+      <div class="page-title">TÉRMINO DO <span>PERNOITE</span></div>
+      <div class="page-sub">Informe o horário de término — a fila é redistribuída automaticamente</div>
+    </div>
+  </div>
+  <div style="max-width:560px;">
+    <div class="card">
+      <div class="card-title">Registrar término</div>
+      <div class="form-grid">
+        <div class="form-row">
+          <div class="field">
+            <label>Esquadrão</label>
+            <select id="reun-sqdn">
+              <option value="">Selecione</option>
+              <option value="1">1º Esquadrão</option>
+              <option value="2">2º Esquadrão</option>
+              <option value="3">3º Esquadrão</option>
+              <option value="4">4º Esquadrão</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Horário de término</label>
+            <input type="time" id="reun-hora">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="registrarTerminoReuniao()">Registrar e redistribuir fila</button>
+      </div>
+    </div>
+    <div class="card mt-16">
+      <div class="card-title">Status dos pernoites hoje</div>
+      <div id="reun-status"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ══ MODAL: Finalizar Corte ══ -->
+<div class="modal-bg hidden" id="modal-finalizar">
+  <div class="modal">
+    <div class="modal-title">✓ FINALIZAR CORTE</div>
+    <div class="form-grid">
+      <div id="finalizar-info" class="card" style="padding:14px;border-color:var(--green)">
+        <div class="card-title">Confirmação</div>
+        <div id="finalizar-preview"></div>
+      </div>
+      <div class="field">
+        <label>Horário de conclusão</label>
+        <input type="time" id="finalizar-hora">
+      </div>
+      <div class="flex gap-8" style="margin-top:4px;">
+        <button class="btn btn-green" onclick="confirmarFinalizarCorte()">Confirmar corte realizado</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-finalizar')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST CONTAINER ══ -->
+<div class="toast-container" id="toasts"></div>
+
+
+<script type="module">
+// ══════════════════════════════════════════════════════════════
+//  FIREBASE SETUP
+// ══════════════════════════════════════════════════════════════
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore, doc, collection, onSnapshot,
+  setDoc, updateDoc, addDoc, getDoc, getDocs,
+  serverTimestamp, query, where, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAOW0Ac5aJxouFmof84wqQuwmOjA0I7z2o",
+  authDomain: "barbearia-ccaer-7bb85.firebaseapp.com",
+  projectId: "barbearia-ccaer-7bb85",
+  storageBucket: "barbearia-ccaer-7bb85.firebasestorage.app",
+  messagingSenderId: "839068485547",
+  appId: "1:839068485547:web:32b53561302100b853b4ee",
+  measurementId: "G-YJG17GGJ0Z"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ══════════════════════════════════════════════════════════════
+//  CONSTANTS & STATE
+// ══════════════════════════════════════════════════════════════
+const SLOTS_TIMES = [
+  "18:00","18:15","18:30","18:45",
+  "19:00","19:15","19:30","19:45",
+  "20:00","20:15","20:30","20:45",
+  "21:00","21:15","21:30","21:45",
+];
+
+const BARBEIROS_FIXOS = [
+  {id:"b1", nome:"CB Juan Pablo"},
+  {id:"b2", nome:"CB Rafael Miranda"},
+  {id:"b3", nome:"SO Ronaldo"},
+  {id:"b4", nome:"CB Tatiane"},
+];
+
+// In-memory state — populated by Firestore listeners
+let state = {
+  cadetes:         [],   // [{id, nome, sqdn, ultimoCorte, totalCortes}]
+  inscricoes:      [],   // [{id, cadeteId, sqdn, data, horaPref, inscricaoTs, slotAlocado, slotBarbeiro, status}]
+  cortes:          [],   // [{id, ts, cadeteId, barbeiro, data, hora}]
+  slots:           {},   // {"data_HH:MM_bId": {cadeteId, status}}
+  terminosReuniao: {},   // {"sqdn": "HH:MM"}
+  barbeiros:       [],   // [{id, nome, status, disponivel, cadeteAtual, slotAtual, inscricaoAtual}]
+};
+
+let finalizarBarbeiroId = null;
+let dbReady = false;
+
+// ══════════════════════════════════════════════════════════════
+//  FIRESTORE HELPERS
+// ══════════════════════════════════════════════════════════════
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function weeksSince(d){ if(!d) return 99; return Math.floor((Date.now()-new Date(d).getTime())/(7*24*3600*1000)); }
+function getPriority(c){ const w=weeksSince(c.ultimoCorte); if(w>=2) return{level:'high',label:'🔴 Alta',score:0}; if(w===1) return{level:'medium',label:'🟡 Média',score:1}; return{level:'normal',label:'🟢 Normal',score:2}; }
+function prioClass(l){ return l==='high'?'prio-high':l==='medium'?'prio-medium':'prio-normal'; }
+function sqdnLabel(n){ return `${n}º Esq.`; }
+function sqdnClass(n){ return `sqdn sqdn-${n}`; }
+function fmtDate(s){ if(!s) return '—'; const[y,m,d]=s.split('-'); return`${d}/${m}/${y}`; }
+function todayInscricoes(){ return state.inscricoes.filter(i=>i.data===todayStr()); }
+function timeToMin(t){ const[h,m]=t.split(':').map(Number); return h*60+m; }
+function getCadete(id){ return state.cadetes.find(c=>c.id===id); }
+function barbeirosDoDia(){ return state.barbeiros.filter(b=>b.disponivel); }
+
+function sortedFila(inscs){
+  return [...inscs].sort((a,b)=>{
+    const ca=getCadete(a.cadeteId), cb=getCadete(b.cadeteId);
+    if(!ca||!cb) return 0;
+    const pa=getPriority(ca), pb=getPriority(cb);
+    if(pa.score!==pb.score) return pa.score-pb.score;
+    const wa=weeksSince(ca.ultimoCorte), wb=weeksSince(cb.ultimoCorte);
+    if(wa!==wb) return wb-wa;
+    return new Date(a.inscricaoTs)-new Date(b.inscricaoTs);
+  });
+}
+
+function statusBadge(s){
+  const m={
+    inscrito:      '<span class="badge badge-muted">Inscrito</span>',
+    agendado:      '<span class="badge badge-blue">Agendado</span>',
+    em_atendimento:'<span class="badge badge-green"><span class="dot"></span> Atendendo</span>',
+    concluido:     '<span class="badge badge-muted">✓ Concluído</span>',
+    espera:        '<span class="badge badge-yellow">Na espera</span>',
+    falta:         '<span class="badge badge-red">Falta</span>',
+  };
+  return m[s]||`<span class="badge badge-muted">${s}</span>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  FIRESTORE INIT — ensure barbeiros doc exists
+// ══════════════════════════════════════════════════════════════
+async function initBarbeiros(){
+  const ref = doc(db,'config','barbeiros');
+  const snap = await getDoc(ref);
+  if(!snap.exists()){
+    const data = {};
+    BARBEIROS_FIXOS.forEach(b=>{
+      data[b.id] = {id:b.id, nome:b.nome, status:'idle', disponivel:false,
+                    cadeteAtual:null, slotAtual:null, inscricaoAtual:null};
+    });
+    await setDoc(ref, data);
+  }
+}
+
+async function initDiaDoc(){
+  const hoje = todayStr();
+  const ref = doc(db,'dias',hoje);
+  const snap = await getDoc(ref);
+  if(!snap.exists()){
+    await setDoc(ref, {slots:{}, terminosReuniao:{}, data: hoje});
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  REAL-TIME LISTENERS
+// ══════════════════════════════════════════════════════════════
+function setupListeners(){
+  const hoje = todayStr();
+
+  // Barbeiros
+  onSnapshot(doc(db,'config','barbeiros'), snap=>{
+    if(!snap.exists()) return;
+    const data = snap.data();
+    state.barbeiros = BARBEIROS_FIXOS.map(bf => ({
+      ...{id:bf.id,nome:bf.nome,status:'idle',disponivel:false,cadeteAtual:null,slotAtual:null,inscricaoAtual:null},
+      ...(data[bf.id]||{})
+    }));
+    renderAll();
+  });
+
+  // Dia atual (slots + términos)
+  onSnapshot(doc(db,'dias',hoje), snap=>{
+    const data = snap.exists() ? snap.data() : {};
+    state.slots           = data.slots           || {};
+    state.terminosReuniao = data.terminosReuniao || {};
+    renderAll();
+  });
+
+  // Cadetes
+  onSnapshot(collection(db,'cadetes'), snap=>{
+    state.cadetes = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderAll();
+  });
+
+  // Inscrições de hoje
+  onSnapshot(
+    query(collection(db,'inscricoes'), where('data','==',hoje)),
+    snap=>{
+      state.inscricoes = snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderAll();
+    }
+  );
+
+  // Cortes recentes (últimos 50)
+  onSnapshot(
+    query(collection(db,'cortes'), orderBy('ts','desc')),
+    snap=>{ state.cortes = snap.docs.map(d=>({id:d.id,...d.data()})); renderHistorico(); }
+  );
+}
+
+// ══════════════════════════════════════════════════════════════
+//  WRITE HELPERS
+// ══════════════════════════════════════════════════════════════
+async function saveBarbeiros(){
+  const data = {};
+  state.barbeiros.forEach(b=>{ data[b.id]=b; });
+  await setDoc(doc(db,'config','barbeiros'), data);
+}
+
+async function saveDia(){
+  const hoje = todayStr();
+  await setDoc(doc(db,'dias',hoje),{
+    slots: state.slots,
+    terminosReuniao: state.terminosReuniao,
+    data: hoje
+  },{merge:true});
+}
+
+async function saveInscricao(insc){
+  if(insc.id && insc.id.length > 10){
+    // existing Firestore doc
+    const {id,...data} = insc;
+    await setDoc(doc(db,'inscricoes',id), data);
+  } else {
+    const {id,...data} = insc;
+    const ref = await addDoc(collection(db,'inscricoes'), data);
+    insc.id = ref.id;
+  }
+}
+
+async function saveCadete(cadete){
+  const {id,...data} = cadete;
+  await setDoc(doc(db,'cadetes',String(id)), data, {merge:true});
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DISTRIBUIÇÃO DE SLOTS
+// ══════════════════════════════════════════════════════════════
+async function distribuirSlots(){
+  const inscs = todayInscricoes().filter(i=>!['concluido','em_atendimento'].includes(i.status));
+  const sorted = sortedFila(inscs);
+  const allSlots = [];
+  barbeirosDoDia().forEach(b=>SLOTS_TIMES.forEach(t=>allSlots.push({time:t,barber:b.id,taken:false})));
+  const hoje = todayStr();
+
+  // Preserve em_atendimento slots
+  const newSlots = {};
+  Object.entries(state.slots).forEach(([k,v])=>{ if(v.status==='em_atendimento') newSlots[k]=v; });
+
+  // Mark busy slots taken
+  allSlots.forEach(sl=>{
+    const key=`${sl.time}_${sl.barber}`;
+    if(newSlots[key]&&newSlots[key].status==='em_atendimento') sl.taken=true;
+  });
+
+  let alocados=0, nadaEspera=0;
+  const inscUpdates = [];
+
+  for(const insc of sorted){
+    const cadete = getCadete(insc.cadeteId);
+    if(!cadete) continue;
+    const termino  = state.terminosReuniao[String(insc.sqdn)] || null;
+    const pref     = timeToMin(insc.horaPref||'18:00');
+    const earliest = termino ? Math.max(pref, timeToMin(termino)) : pref;
+    let found = false;
+    for(const sl of allSlots){
+      if(!sl.taken && timeToMin(sl.time)>=earliest){
+        sl.taken = true;
+        const key = `${sl.time}_${sl.barber}`;
+        newSlots[key] = {cadeteId:insc.cadeteId, status:'agendado'};
+        insc.slotAlocado  = sl.time;
+        insc.slotBarbeiro = sl.barber;
+        insc.status       = 'agendado';
+        inscUpdates.push(insc);
+        alocados++; found=true; break;
+      }
+    }
+    if(!found){
+      insc.slotAlocado=null; insc.slotBarbeiro=null; insc.status='espera';
+      inscUpdates.push(insc);
+      nadaEspera++;
+    }
+  }
+
+  state.slots = newSlots;
+  await saveDia();
+  await Promise.all(inscUpdates.map(i=>saveInscricao(i)));
+  toast(`${alocados} slots alocados · ${nadaEspera} na espera`,'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  INSCRIÇÃO
+// ══════════════════════════════════════════════════════════════
+async function submitInscricao(prefix){
+  const nome = document.getElementById(`${prefix}-nome`).value.trim();
+  const sqdn = parseInt(document.getElementById(`${prefix}-sqdn`).value);
+  const data = document.getElementById(`${prefix}-data`).value;
+  const hora = document.getElementById(`${prefix}-hora`).value;
+  if(!nome||!sqdn||!data||!hora){ toast('Preencha todos os campos','warn'); return; }
+
+  // Find or create cadete
+  let cadete = state.cadetes.find(c=>c.nome.toLowerCase()===nome.toLowerCase());
+  if(!cadete){
+    const ref = await addDoc(collection(db,'cadetes'),{nome,sqdn,ultimoCorte:null,totalCortes:0});
+    cadete = {id:ref.id, nome, sqdn, ultimoCorte:null, totalCortes:0};
+  }
+
+  // Check duplicate
+  const already = state.inscricoes.find(i=>i.cadeteId===cadete.id&&i.data===data);
+  if(already){ toast('Cadete já inscrito nesta data','warn'); return; }
+
+  await addDoc(collection(db,'inscricoes'),{
+    cadeteId: cadete.id, sqdn, data, horaPref: hora,
+    inscricaoTs: new Date().toISOString(),
+    slotAlocado:null, slotBarbeiro:null, status:'inscrito'
+  });
+
+  toast(`${nome} inscrito!`,'success');
+  document.getElementById(`${prefix}-nome`).value='';
+  document.getElementById(`${prefix}-sqdn`).value='';
+  document.getElementById(`${prefix}-hora`).value='';
+  document.getElementById(`${prefix}-preview-box`).classList.add('hidden');
+  if(data===todayStr()) await distribuirSlots();
+}
+
+// Make globally accessible (called from onclick)
+window.submitInscricao = submitInscricao;
+
+function setupPreview(prefix){
+  ['nome','sqdn'].forEach(f=>{
+    const el=document.getElementById(`${prefix}-${f}`);
+    if(el){ el.addEventListener('input',()=>previewInscricao(prefix)); el.addEventListener('change',()=>previewInscricao(prefix)); }
+  });
+}
+
+function previewInscricao(prefix){
+  const nome = document.getElementById(`${prefix}-nome`).value.trim();
+  const sqdn = parseInt(document.getElementById(`${prefix}-sqdn`).value);
+  const box  = document.getElementById(`${prefix}-preview-box`);
+  const prev = document.getElementById(`${prefix}-preview`);
+  if(!nome||!sqdn){ box.classList.add('hidden'); return; }
+  const existing = state.cadetes.find(c=>c.nome.toLowerCase()===nome.toLowerCase());
+  box.classList.remove('hidden');
+  if(existing){
+    const p=getPriority(existing); const w=weeksSince(existing.ultimoCorte);
+    prev.innerHTML=`<div class="flex gap-8 items-center"><span class="${sqdnClass(existing.sqdn)}">${sqdnLabel(existing.sqdn)}</span><span class="prio ${prioClass(p.level)}">${p.label}</span></div><div style="font-size:11px;color:var(--text2);margin-top:6px;">Último corte: <strong>${fmtDate(existing.ultimoCorte)}</strong> · ${w} sem. sem cortar</div>`;
+  } else {
+    prev.innerHTML=`<div style="font-size:11px;color:var(--text2);">Novo cadete — será cadastrado. Prioridade <span class="prio prio-normal">🟢 Normal</span></div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TÉRMINO DO PERNOITE
+// ══════════════════════════════════════════════════════════════
+async function registrarTerminoReuniao(){
+  const sqdn = document.getElementById('reun-sqdn').value;
+  const hora = document.getElementById('reun-hora').value;
+  if(!sqdn||!hora){ toast('Preencha esquadrão e horário','warn'); return; }
+  state.terminosReuniao[sqdn] = hora;
+  await saveDia();
+  toast(`Término do ${sqdn}º Esq. registrado: ${hora}. Redistribuindo fila…`,'info');
+  await distribuirSlots();
+  renderReuniaoStatus();
+}
+window.registrarTerminoReuniao = registrarTerminoReuniao;
+
+function renderReuniaoStatus(){
+  const el=document.getElementById('reun-status');
+  if(!el) return;
+  el.innerHTML=[1,2,3,4].map(s=>{
+    const t=state.terminosReuniao[String(s)];
+    return`<div class="flex items-center gap-8" style="padding:8px 0;border-bottom:1px solid var(--border)">
+      <span class="${sqdnClass(s)}">${sqdnLabel(s)}</span>
+      <span style="flex:1;font-size:12px;color:var(--text2)">Término do pernoite</span>
+      ${t?`<span class="badge badge-green"><span class="dot"></span>${t}</span>`:'<span class="badge badge-muted">Não registrado</span>'}
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  GESTÃO — DISPONIBILIDADE
+// ══════════════════════════════════════════════════════════════
+async function toggleDisponivel(barbeiroId){
+  const b = state.barbeiros.find(x=>x.id===barbeiroId);
+  if(!b) return;
+  if(b.status==='busy'&&b.disponivel){ toast(`${b.nome} está em atendimento — finalize o corte antes`,'warn'); return; }
+  b.disponivel = !b.disponivel;
+  if(!b.disponivel){ b.status='idle'; b.cadeteAtual=null; b.slotAtual=null; b.inscricaoAtual=null; }
+  await saveBarbeiros();
+  toast(`${b.nome} marcado como ${b.disponivel?'disponível':'indisponível'}`,'info');
+}
+window.toggleDisponivel = toggleDisponivel;
+
+function renderGestao(){
+  document.getElementById('gestao-disponibilidade').innerHTML=state.barbeiros.map(b=>{
+    const isDisp=b.disponivel; const isBusy=b.status==='busy';
+    return`<div class="barber-card" style="border-color:${isDisp?'var(--green)':'var(--border)'}">
+      <div class="flex items-center gap-8" style="justify-content:space-between">
+        <div class="barber-name" style="margin-bottom:0;font-size:17px">${b.nome.toUpperCase()}</div>
+        ${isDisp?`<span class="badge badge-green"><span class="dot"></span> Disponível</span>`:`<span class="badge badge-muted">Indisponível</span>`}
+      </div>
+      <div style="margin-top:14px">
+        <button class="btn ${isDisp?'btn-danger':'btn-green'} btn-sm" onclick="toggleDisponivel('${b.id}')">
+          ${isDisp?(isBusy?'(em atendimento)':'Marcar indisponível'):'Marcar disponível'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const ativos = barbeirosDoDia();
+  const gestaoBarbers = document.getElementById('gestao-barbers');
+  if(ativos.length===0){
+    gestaoBarbers.innerHTML=`<div class="card" style="grid-column:1/-1"><div class="empty" style="padding:20px">Nenhum barbeiro disponível hoje. Marque a disponibilidade acima.</div></div>`;
+  } else {
+    gestaoBarbers.innerHTML=ativos.map(b=>{
+      const isIdle=b.status==='idle'; const cadete=b.cadeteAtual?getCadete(b.cadeteAtual):null;
+      return`<div class="barber-card" style="border-color:${isIdle?'var(--yellow)':'var(--green)'}">
+        <div class="barber-name">${b.nome.toUpperCase()}</div>
+        ${isIdle
+          ?`<div class="idle-label"><span class="idle-pulse"></span>OCIOSO — aguardando cadete</div>`
+          :`<div class="flex items-center gap-8 mt-4"><span class="busy-pulse"></span><span style="font-size:11px;color:var(--green);font-family:var(--mono)">EM ATENDIMENTO</span></div>
+            <div class="slot-cadet mt-8">${cadete?cadete.nome:'—'}</div>
+            <div class="slot-info">${cadete?sqdnLabel(cadete.sqdn):''} · Slot ${b.slotAtual||''}</div>
+            <div style="margin-top:14px"><button class="btn btn-green" onclick="openFinalizarCorte('${b.id}')">✓ Finalizar corte</button></div>`
+        }
+      </div>`;
+    }).join('');
+  }
+
+  const selC=document.getElementById('enc-cadete');
+  if(selC){
+    const opts=state.cadetes.filter(c=>!todayInscricoes().find(i=>i.cadeteId===c.id&&i.status==='em_atendimento'));
+    selC.innerHTML=opts.length?opts.map(c=>`<option value="${c.id}">${c.nome} (${sqdnLabel(c.sqdn)})</option>`).join(''):`<option value="">Nenhum cadete disponível</option>`;
+  }
+  const selB=document.getElementById('enc-barbeiro');
+  if(selB){
+    const bOpts=barbeirosDoDia();
+    selB.innerHTML=bOpts.length?bOpts.map(b=>`<option value="${b.id}">${b.nome}</option>`).join(''):`<option value="">Nenhum barbeiro disponível</option>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  ATRIBUIR ENCAIXE
+// ══════════════════════════════════════════════════════════════
+async function atribuirEncaixe(){
+  const cadeteId   = document.getElementById('enc-cadete').value;
+  const barbeiroId = document.getElementById('enc-barbeiro').value;
+  const cadete     = getCadete(cadeteId);
+  const barbeiro   = state.barbeiros.find(b=>b.id===barbeiroId);
+  if(!cadete||!barbeiro){ toast('Selecione cadete e barbeiro','warn'); return; }
+  if(!barbeiro.disponivel){ toast(`${barbeiro.nome} não está disponível hoje`,'warn'); return; }
+  if(barbeiro.status==='busy'){ toast(`${barbeiro.nome} já está em atendimento`,'warn'); return; }
+
+  const agora = new Date();
+  const horaAtual = `${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
+
+  barbeiro.status='busy'; barbeiro.cadeteAtual=cadeteId; barbeiro.slotAtual=horaAtual;
+
+  const insc = todayInscricoes().find(i=>i.cadeteId===cadeteId&&!['concluido','em_atendimento'].includes(i.status));
+  if(insc){ insc.status='em_atendimento'; barbeiro.inscricaoAtual=insc.id; await saveInscricao(insc); }
+  else{ barbeiro.inscricaoAtual=null; }
+
+  const slotKey = `${horaAtual}_${barbeiroId}`;
+  state.slots[slotKey] = {cadeteId, status:'em_atendimento'};
+
+  await saveBarbeiros();
+  await saveDia();
+  toast(`${cadete.nome} atribuído a ${barbeiro.nome}`,'success');
+}
+window.atribuirEncaixe = atribuirEncaixe;
+
+// ══════════════════════════════════════════════════════════════
+//  FINALIZAR CORTE
+// ══════════════════════════════════════════════════════════════
+function openFinalizarCorte(barbeiroId){
+  finalizarBarbeiroId = barbeiroId;
+  const barbeiro = state.barbeiros.find(b=>b.id===barbeiroId);
+  const cadete   = barbeiro&&barbeiro.cadeteAtual ? getCadete(barbeiro.cadeteAtual) : null;
+  const now = new Date();
+  document.getElementById('finalizar-hora').value=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('finalizar-preview').innerHTML=cadete
+    ?`<strong>${cadete.nome}</strong> · <span class="${sqdnClass(cadete.sqdn)}">${sqdnLabel(cadete.sqdn)}</span><div style="font-size:11px;color:var(--text2);margin-top:4px;">Slot iniciado: ${barbeiro.slotAtual}</div>`
+    :'Nenhum cadete em atendimento';
+  document.getElementById('modal-finalizar').classList.remove('hidden');
+}
+window.openFinalizarCorte = openFinalizarCorte;
+
+async function confirmarFinalizarCorte(){
+  const barbeiro = state.barbeiros.find(b=>b.id===finalizarBarbeiroId);
+  if(!barbeiro||!barbeiro.cadeteAtual){ closeModal('modal-finalizar'); return; }
+  const cadeteId = barbeiro.cadeteAtual;
+  const cadete   = getCadete(cadeteId);
+  const hora     = document.getElementById('finalizar-hora').value;
+  const hoje     = todayStr();
+
+  // Update cadete
+  cadete.ultimoCorte = hoje;
+  cadete.totalCortes = (cadete.totalCortes||0)+1;
+  await saveCadete(cadete);
+
+  // Register corte
+  await addDoc(collection(db,'cortes'),{
+    ts:`${hoje} ${hora}`, cadeteId, barbeiro:barbeiro.nome, data:hoje, hora
+  });
+
+  // Update inscrição
+  const inscId = barbeiro.inscricaoAtual;
+  const insc   = inscId ? state.inscricoes.find(i=>i.id===inscId)
+                        : todayInscricoes().find(i=>i.cadeteId===cadeteId&&i.status==='em_atendimento');
+  if(insc){ insc.status='concluido'; await saveInscricao(insc); }
+
+  // Release barbeiro
+  barbeiro.status='idle'; barbeiro.cadeteAtual=null; barbeiro.slotAtual=null; barbeiro.inscricaoAtual=null;
+  await saveBarbeiros();
+
+  const proximos = sortedFila(todayInscricoes().filter(i=>i.status==='espera'));
+  toast(proximos.length>0
+    ?`Corte de ${cadete.nome} concluído! Próximo: ${getCadete(proximos[0].cadeteId)?.nome}`
+    :`Corte de ${cadete.nome} concluído! Barbeiro disponível.`
+  ,'success');
+
+  closeModal('modal-finalizar');
+}
+window.confirmarFinalizarCorte = confirmarFinalizarCorte;
+
+// ══════════════════════════════════════════════════════════════
+//  MARCAR FALTA
+// ══════════════════════════════════════════════════════════════
+async function marcarFalta(inscId){
+  const insc = state.inscricoes.find(i=>i.id===inscId);
+  if(!insc) return;
+  insc.status='falta';
+  const espera = sortedFila(todayInscricoes().filter(i=>i.status==='espera'));
+  if(espera.length>0){
+    const next=espera[0];
+    next.slotAlocado=insc.slotAlocado; next.slotBarbeiro=insc.slotBarbeiro; next.status='agendado';
+    await saveInscricao(next);
+    toast(`Falta registrada. Slot ${insc.slotAlocado} → ${getCadete(next.cadeteId)?.nome}`,'info');
+  } else {
+    toast('Falta registrada. Slot liberado.','warn');
+  }
+  await saveInscricao(insc);
+}
+window.marcarFalta = marcarFalta;
+
+// ══════════════════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ══════════════════════════════════════════════════════════════
+function renderDashboard(){
+  const inscs     = todayInscricoes();
+  const concluidos= inscs.filter(i=>i.status==='concluido');
+  const espera    = inscs.filter(i=>i.status==='espera');
+  const disp      = barbeirosDoDia();
+  const idleB     = disp.filter(b=>b.status==='idle').length;
+  const totalSlots= disp.length*16;
+
+  const kpiHtml=`
+    <div class="card card-accent">
+      <div class="card-title">Inscritos hoje</div>
+      <div class="card-value">${inscs.length}</div>
+      <div class="card-sub">de ${totalSlots} slots disponíveis</div>
+      <div class="progress-bar mt-8"><div class="progress-fill" style="width:${totalSlots?Math.min(100,inscs.length/totalSlots*100):0}%"></div></div>
+    </div>
+    <div class="card card-green">
+      <div class="card-title">Concluídos</div>
+      <div class="card-value text-green">${concluidos.length}</div>
+      <div class="card-sub">cortes realizados hoje</div>
+    </div>
+    <div class="card card-red">
+      <div class="card-title">Na espera</div>
+      <div class="card-value text-red">${espera.length}</div>
+      <div class="card-sub">sem slot disponível</div>
+    </div>
+    <div class="card ${idleB>0?'card-blue':''}">
+      <div class="card-title">Barbeiros ociosos</div>
+      <div class="card-value ${idleB>0?'text-yellow':''}">${idleB}</div>
+      <div class="card-sub">de ${disp.length} disponíveis hoje</div>
+    </div>`;
+
+  ['kpi-cards','u-kpi-cards'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=kpiHtml;});
+
+  // Barber mini cards (dashboard)
+  document.getElementById('barber-status-mini').innerHTML=disp.length
+    ?disp.map(b=>{
+        const isIdle=b.status==='idle'; const cadete=b.cadeteAtual?getCadete(b.cadeteAtual):null;
+        return`<div class="barber-card">
+          <div class="barber-name">${b.nome.toUpperCase()}</div>
+          ${isIdle
+            ?`<div class="idle-label"><span class="idle-pulse"></span>OCIOSO — SLOT DISPONÍVEL</div>
+               <div style="margin-top:10px"><button class="btn btn-ghost btn-sm" onclick="showPage('gestao')">→ Ir para Gestão</button></div>`
+            :`<div class="flex items-center gap-8 mt-4"><span class="busy-pulse"></span><span style="font-size:11px;color:var(--green);font-family:var(--mono)">EM ATENDIMENTO</span></div>
+               <div class="slot-cadet mt-4">${cadete?cadete.nome:'—'}</div>
+               <div class="slot-info">${cadete?sqdnLabel(cadete.sqdn):''}</div>`
+          }
+        </div>`;
+      }).join('')
+    :`<div class="card" style="grid-column:1/-1"><div class="empty" style="padding:20px">Nenhum barbeiro disponível hoje.</div></div>`;
+
+  // User barber cards (read-only)
+  const ubc=document.getElementById('u-barber-cards');
+  if(ubc) ubc.innerHTML=disp.length
+    ?disp.map(b=>{
+        const isIdle=b.status==='idle'; const cadete=b.cadeteAtual?getCadete(b.cadeteAtual):null;
+        return`<div class="barber-card" style="border-color:${isIdle?'var(--yellow)':'var(--green)'}">
+          <div class="barber-name">${b.nome.toUpperCase()}</div>
+          ${isIdle
+            ?`<div class="idle-label"><span class="idle-pulse"></span>OCIOSO — VAGA DISPONÍVEL</div>
+               <div style="font-size:11px;color:var(--text2);margin-top:8px">Procure o responsável para encaixe imediato.</div>`
+            :`<div class="flex items-center gap-8 mt-4"><span class="busy-pulse"></span><span style="font-size:11px;color:var(--green);font-family:var(--mono)">EM ATENDIMENTO</span></div>
+               <div class="slot-cadet mt-4">${cadete?cadete.nome:'—'}</div>
+               <div class="slot-info">${cadete?sqdnLabel(cadete.sqdn):''}</div>`
+          }
+        </div>`;
+      }).join('')
+    :`<div class="card" style="grid-column:1/-1"><div class="empty" style="padding:16px">Nenhum barbeiro disponível hoje.</div></div>`;
+
+  // Fila preview (dashboard)
+  const sorted=sortedFila(todayInscricoes().filter(i=>i.status!=='concluido'));
+  document.getElementById('fila-preview').innerHTML=sorted.slice(0,8).map((insc,i)=>{
+    const c=getCadete(insc.cadeteId); if(!c) return'';
+    const p=getPriority(c); const w=weeksSince(c.ultimoCorte);
+    return`<tr>
+      <td><span style="font-family:var(--mono);color:var(--muted)">${i+1}</span></td>
+      <td><strong>${c.nome}</strong></td>
+      <td><span class="${sqdnClass(c.sqdn)}">${sqdnLabel(c.sqdn)}</span></td>
+      <td style="font-family:var(--mono);font-size:11px">${fmtDate(c.ultimoCorte)}</td>
+      <td style="font-family:var(--mono)">${w===99?'∞':w}</td>
+      <td><span class="prio ${prioClass(p.level)}">${p.label}</span></td>
+      <td style="font-family:var(--mono);color:var(--accent)">${insc.slotAlocado||'—'}</td>
+      <td>${statusBadge(insc.status)}</td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="8" class="empty">Nenhuma inscrição hoje</td></tr>`;
+}
+
+function renderSlots(){
+  const hoje  = todayStr();
+  const ativos= barbeirosDoDia();
+
+  document.getElementById('barber-live').innerHTML=ativos.map(b=>{
+    const isIdle=b.status==='idle'; const cadete=b.cadeteAtual?getCadete(b.cadeteAtual):null;
+    return`<div class="barber-card" style="border-color:${isIdle?'var(--yellow)':'var(--green)'}">
+      <div class="barber-name">${b.nome.toUpperCase()}</div>
+      ${isIdle
+        ?`<div class="idle-label"><span class="idle-pulse"></span>OCIOSO — VAGA DISPONÍVEL AGORA</div>
+           <div style="font-size:11px;color:var(--text2);margin-top:8px">Apresente-se ao responsável para encaixe.</div>
+           <div style="margin-top:12px"><button class="btn btn-primary btn-sm" onclick="showPage('gestao')">→ Atribuir (gestão)</button></div>`
+        :`<div class="flex items-center gap-8 mt-4"><span class="busy-pulse"></span><span style="font-size:11px;color:var(--green);font-family:var(--mono)">EM ATENDIMENTO</span></div>
+           <div class="slot-cadet mt-8">${cadete?cadete.nome:'—'}</div>
+           <div class="slot-info">${cadete?sqdnLabel(cadete.sqdn):''} · ${b.slotAtual||''}</div>
+           <div style="margin-top:12px"><button class="btn btn-green btn-sm" onclick="openFinalizarCorte('${b.id}')">✓ Finalizar corte</button></div>`
+      }
+    </div>`;
+  }).join('')||`<div class="card" style="grid-column:1/-1"><div class="empty">Nenhum barbeiro disponível hoje.</div></div>`;
+
+  const hdr=document.getElementById('slots-grid-header');
+  if(hdr) hdr.innerHTML='<th>Horário</th>'+ativos.map(b=>`<th>${b.nome}</th>`).join('');
+
+  document.getElementById('slots-grid').innerHTML=SLOTS_TIMES.map(t=>{
+    const renderCell=(b)=>{
+      const s=state.slots[`${t}_${b.id}`];
+      if(!s) return`<td style="color:var(--muted);font-family:var(--mono);font-size:11px">— livre —</td>`;
+      const c=getCadete(s.cadeteId);
+      const bg=s.status==='concluido'?'rgba(90,96,128,.1)':s.status==='em_atendimento'?'rgba(82,192,122,.08)':'rgba(201,168,76,.06)';
+      return`<td style="background:${bg}"><div class="flex items-center gap-8">${statusBadge(s.status)}<span style="font-size:12px;font-weight:600">${c?c.nome:'?'}</span><span class="${c?sqdnClass(c.sqdn):''}">${c?sqdnLabel(c.sqdn):''}</span></div></td>`;
+    };
+    return`<tr><td style="font-family:var(--mono);color:var(--accent);font-size:13px;font-weight:600">${t}</td>${ativos.map(b=>renderCell(b)).join('')}</tr>`;
+  }).join('');
+}
+
+function renderFila(){
+  const inscs  = todayInscricoes();
+  const ativos = sortedFila(inscs.filter(i=>!['concluido','espera'].includes(i.status)));
+  const espera = sortedFila(inscs.filter(i=>i.status==='espera'));
+
+  document.getElementById('fila-full').innerHTML=ativos.map((insc,i)=>{
+    const c=getCadete(insc.cadeteId); if(!c) return'';
+    const p=getPriority(c); const w=weeksSince(c.ultimoCorte);
+    const bNome = insc.slotBarbeiro ? (state.barbeiros.find(b=>b.id===insc.slotBarbeiro)?.nome||insc.slotBarbeiro) : '—';
+    return`<tr>
+      <td style="font-family:var(--mono);color:var(--muted)">${i+1}</td>
+      <td><strong>${c.nome}</strong></td>
+      <td><span class="${sqdnClass(c.sqdn)}">${sqdnLabel(c.sqdn)}</span></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">${new Date(insc.inscricaoTs).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
+      <td style="font-family:var(--mono);font-size:11px">${fmtDate(c.ultimoCorte)}</td>
+      <td style="font-family:var(--mono)">${w===99?'∞':w}</td>
+      <td><span class="prio ${prioClass(p.level)}">${p.label}</span></td>
+      <td style="font-family:var(--mono);color:var(--accent);font-weight:600">${insc.slotAlocado?`${insc.slotAlocado} · ${bNome}`:'—'}</td>
+      <td>${statusBadge(insc.status)}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="marcarFalta('${insc.id}')">✗ Falta</button></td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="10" class="empty">Nenhuma inscrição alocada</td></tr>`;
+
+  document.getElementById('espera-list').innerHTML=espera.map((insc,i)=>{
+    const c=getCadete(insc.cadeteId); if(!c) return'';
+    const p=getPriority(c); const w=weeksSince(c.ultimoCorte);
+    return`<tr>
+      <td style="font-family:var(--mono);color:var(--muted)">${i+1}</td>
+      <td><strong>${c.nome}</strong></td>
+      <td><span class="${sqdnClass(c.sqdn)}">${sqdnLabel(c.sqdn)}</span></td>
+      <td style="font-family:var(--mono)">${w===99?'∞':w}</td>
+      <td><span class="prio ${prioClass(p.level)}">${p.label}</span></td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="5" class="empty">Sem cadetes na espera</td></tr>`;
+
+  const uft=document.getElementById('u-fila-table');
+  if(uft){
+    const todos=sortedFila(todayInscricoes().filter(i=>i.status!=='concluido'));
+    uft.innerHTML=todos.map((insc,i)=>{
+      const c=getCadete(insc.cadeteId); if(!c) return'';
+      const p=getPriority(c);
+      return`<tr>
+        <td style="font-family:var(--mono);color:var(--muted)">${i+1}</td>
+        <td><strong>${c.nome}</strong></td>
+        <td><span class="${sqdnClass(c.sqdn)}">${sqdnLabel(c.sqdn)}</span></td>
+        <td><span class="prio ${prioClass(p.level)}">${p.label}</span></td>
+        <td style="font-family:var(--mono);color:var(--accent)">${insc.slotAlocado||'—'}</td>
+        <td>${statusBadge(insc.status)}</td>
+      </tr>`;
+    }).join('')||`<tr><td colspan="6" class="empty">Nenhuma inscrição hoje</td></tr>`;
+  }
+}
+
+function renderHistorico(){
+  const sorted=[...state.cadetes].sort((a,b)=>weeksSince(b.ultimoCorte)-weeksSince(a.ultimoCorte));
+  document.getElementById('historico-table').innerHTML=sorted.map(c=>{
+    const p=getPriority(c); const w=weeksSince(c.ultimoCorte);
+    return`<tr>
+      <td><strong>${c.nome}</strong></td>
+      <td><span class="${sqdnClass(c.sqdn)}">${sqdnLabel(c.sqdn)}</span></td>
+      <td style="font-family:var(--mono);font-size:11px">${fmtDate(c.ultimoCorte)}</td>
+      <td style="font-family:var(--mono)">${w===99?'∞':w}</td>
+      <td style="font-family:var(--mono)">${c.totalCortes||0}</td>
+      <td><span class="prio ${prioClass(p.level)}">${p.label}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('cortes-recentes').innerHTML=state.cortes.slice(0,20).map(ct=>{
+    const c=getCadete(ct.cadeteId);
+    return`<tr>
+      <td style="font-family:var(--mono);font-size:11px">${ct.ts}</td>
+      <td>${c?c.nome:'?'}</td>
+      <td>${c?`<span class="${sqdnClass(c.sqdn)}">${sqdnLabel(c.sqdn)}</span>`:''}</td>
+      <td style="font-size:11px;color:var(--text2)">${ct.barbeiro}</td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="4" class="empty">Nenhum corte registrado</td></tr>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════════════════════════
+function showPage(page){
+  document.querySelectorAll('[id^="page-"]').forEach(el=>el.classList.add('hidden'));
+  document.getElementById(`page-${page}`).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const ni=document.getElementById(`nav-${page}`); if(ni) ni.classList.add('active');
+  if(page==='gestao')   renderGestao();
+  if(page==='pernoite') renderReuniaoStatus();
+}
+window.showPage = showPage;
+
+function renderAll(){
+  renderDashboard(); renderSlots(); renderFila(); renderGestao();
+  const page = document.querySelector('[id^="page-"]:not(.hidden)');
+  if(page?.id==='page-historico') renderHistorico();
+  if(page?.id==='page-pernoite')  renderReuniaoStatus();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  CLOCK + MODALS + TOAST
+// ══════════════════════════════════════════════════════════════
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('clock-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
+}
+
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+window.closeModal = closeModal;
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.add('hidden');}));
+
+function toast(msg,type='info'){
+  const c=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${{success:'✓',info:'ℹ',warn:'⚠'}[type]||'ℹ'}</span><span>${msg}</span>`;
+  c.appendChild(t); setTimeout(()=>t.remove(),4000);
+}
+
+// ══════════════════════════════════════════════════════════════
+//  LOADING SCREEN
+// ══════════════════════════════════════════════════════════════
+function showLoading(msg){
+  let ld=document.getElementById('loading-overlay');
+  if(!ld){
+    ld=document.createElement('div');
+    ld.id='loading-overlay';
+    ld.style.cssText='position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;font-family:var(--mono);color:var(--accent)';
+    ld.innerHTML=`<div style="font-family:var(--display);font-size:36px;letter-spacing:4px;margin-bottom:16px">BARBEARIA</div><div id="loading-msg" style="font-size:11px;color:var(--muted);letter-spacing:2px"></div>`;
+    document.body.appendChild(ld);
+  }
+  document.getElementById('loading-msg').textContent=msg;
+}
+function hideLoading(){ const ld=document.getElementById('loading-overlay'); if(ld) ld.remove(); }
+
+// ══════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════
+async function init(){
+  showLoading('CONECTANDO AO FIREBASE…');
+  try{
+    await initBarbeiros();
+    await initDiaDoc();
+    showLoading('CARREGANDO DADOS…');
+    setupListeners();
+    document.getElementById('u-data').value=todayStr();
+    setupPreview('u');
+    setInterval(updateClock,1000);
+    updateClock();
+    renderReuniaoStatus();
+    setTimeout(hideLoading, 1500);
+  } catch(e){
+    showLoading(`ERRO: ${e.message}`);
+    console.error(e);
+  }
+}
+
+window.distribuirSlots = distribuirSlots;
+init();
+</script>
+
+<div style="position:fixed;bottom:6px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:9px;color:rgba(90,96,128,.35);letter-spacing:1px;pointer-events:none;user-select:none;white-space:nowrap">desenvolvido por Ten Alves · 2026</div>
+</body>
+</html>
